@@ -22,3 +22,4 @@ steps:
     csmFileLink: 'https://raw.githubusercontent.com/selahcloud/barracudawaftestdrive/main/azuredeploy.json'
     csmParametersFileLink: 'https://raw.githubusercontent.com/selahcloud/barracudawaftestdrive/main/azuredeploy.parameters.json'
     deploymentMode: 'Incremental'
+

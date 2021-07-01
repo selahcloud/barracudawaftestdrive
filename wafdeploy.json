@@ -8,12 +8,6 @@
         "description": "Password for the Virtual Machine."
       }
     },
-    "AppServerName": {
-      "type": "string",
-      "metadata": {
-        "description": "description"
-      }
-    },
     "prefix": {
       "defaultValue": "Barracuda",
       "type": "String",
@@ -35,6 +29,9 @@
     },
     "vNETName": {
       "type": "String"
+    },
+    "subnetName":{
+      "type":"String"
     },
     "license": {
 
@@ -97,8 +94,7 @@
     "publicIPAddressName": "[concat(variables('wafVmName'),'PIP')]",
     "publicIPAddressType": "Static",
     "vnetID": "[resourceId(parameters('VNetResourceGroup'),'Microsoft.Network/virtualNetworks',parameters('vNETName'))]",
-    "subnetName": "[concat(parameters('AppServerName'),'-VirtualNetwork-Subnet')]",
-    "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]",
     "lbID": "[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName'))]",
     "PublicIPID": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]",
     "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/loadBalancerFrontend')]",

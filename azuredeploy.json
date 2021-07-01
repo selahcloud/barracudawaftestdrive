@@ -116,7 +116,7 @@
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "[toLower(parameters('AppServerName'))]"
+                    "domainNameLabel": "[toLower(concat(parameters('AppServerName'), parameters('VirtualNetworkName')))]"
                 }
             }
         },

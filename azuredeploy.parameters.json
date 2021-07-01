@@ -8,6 +8,9 @@
         "VirtualNetworkName": {
             "value": "labvnet" 
         },
+        "wafsubnet":{
+            "value": "WAFDeploymentSubnet"
+        },
         "vNetResourceGroup": {
             "value": "testdrive" 
         },

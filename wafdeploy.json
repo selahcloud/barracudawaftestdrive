@@ -77,7 +77,7 @@
     }
   },
   "variables": {
-    "computeApiVersion": "2017-03-30",
+    "computeApiVersion": "2020-10-01",
     "networkApiVersion": "2019-02-01",
     "imagePublisher": "barracudanetworks",
     "imageOffer": "waf",

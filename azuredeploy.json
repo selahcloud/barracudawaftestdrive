@@ -75,7 +75,7 @@
     "variables": {
         "vNetResourceGroup": "[parameters('vNetResourceGroup')]",
         "virtualnetworkname": "[concat(parameters('VirtualNetworkName'),'-VirtualNetwork')]",
-        "storageaccountname": "[toLower(concat(parameters('AppServerName'),'storage'))]",
+        "storageaccountname": "[toLower(concat(parameters('AppServerName'),'001storage'))]",
         "appserverpublicip": "[concat(parameters('AppServerName'),'-PublicIP')]",
         "appservernsg": "[concat(parameters('AppServerName'),'-nsg')]",
         "appservernic": "[concat(parameters('AppServerName'),'-NetworkInterface')]",

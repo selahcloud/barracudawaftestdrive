@@ -87,7 +87,7 @@
         "appservernsg": "[concat(parameters('AppServerName'),'-nsg')]",
         "appservernic": "[concat(parameters('AppServerName'),'-NetworkInterface')]",
         "vnetID": "[resourceId(parameters('VNetResourceGroup'),'Microsoft.Network/virtualNetworks',parameters('VirtualNetworkName'))]",
-        "subnetname": "[concat(parameters('AppServerName'),'-VirtualNetwork-Subnet')]",
+        "serversubnetname": "[concat(parameters('AppServerName'),'-VirtualNetwork-Subnet')]",
         "wafsubnet": "[concat('WAFDeploymentSubnet','-VirtualNetwork-Subnet')]",
         "prefix": "Barracuda",
         "license": "[parameters('license')]",
@@ -171,7 +171,7 @@
                 },
                 "subnets": [
                     {
-                        "name": "[variables('subnetname')]",
+                        "name": "[variables('serversubnetname')]",
                         "properties": {
                             "addressPrefix": "10.0.0.0/24",
                             "networkSecurityGroup": {
@@ -213,7 +213,7 @@
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('appserverpublicip'))]"
                             },
                             "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualnetworkname'), concat(parameters('AppServerName'),'-VirtualNetwork-Subnet'))]"
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualnetworkname'), variables('serversubnetname'))]"
                             }
                         }
                     }
@@ -272,7 +272,7 @@
             "name": "linkedDeployment1",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
-            "dependsOn":["[resourceId('Microsoft.Network/virtualNetworks', variables('subnetname'))]"],
+            "dependsOn":["[resourceId('Microsoft.Network/virtualNetworks', variables('wafsubnet'))]"],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {

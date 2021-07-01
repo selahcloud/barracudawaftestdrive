@@ -12,7 +12,7 @@
             "value": "WAFDeploymentSubnet"
         },
         "vNetResourceGroup": {
-            "value": "testdrive" 
+            "value": "aravindan-rm-pipeline-new" 
         },
         "license": {
             "value": "byol"

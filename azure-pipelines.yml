@@ -19,7 +19,7 @@ steps:
     resourceGroupName: 'aravindan-rm-pipeline-new'
     location: 'South Central US'
     templateLocation: 'URL of the file'
-    csmFileLink: 'https://raw.githubusercontent.com/selahcloud/barracudawaftestdrive/main/azuredeploy.json'
+    csmFileLink: 'https://raw.githubusercontent.com/selahcloud/barracudawaftestdrive/main/azuredeploynew.json'
     csmParametersFileLink: 'https://raw.githubusercontent.com/selahcloud/barracudawaftestdrive/main/azuredeploy.parameters.json'
     deploymentMode: 'Incremental'
     deploymentName: 'cudawafTestDrive'

@@ -1,0 +1,308 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "AppServerName": {
+            "type": "string",
+            "metadata": {
+                "description": "Web App Name"
+            }
+        },
+        "VirtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "description": "Virtual Network for this deployment"
+            }
+        
+        },
+        "vNetResourceGroup": {
+            "type": "String",
+            "metadata": {
+                "description": "The name of the vNETs resource group"
+            }
+            },
+        "license": {
+            "allowedValues": [
+                "hourly",
+                "byol"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "Hourly (PAYG) or BYOL (Bring your own) license"
+            },
+            "defaultValue": "byol"
+            },
+        "numberOfInstances": {
+            "defaultValue": 2,
+            "type": "Int"
+            },
+        "adminPassword": {
+            "type": "SecureString",
+            "metadata": {
+                "description": "Password for the Virtual Machine."
+            }
+            },
+        "dnsNameForLBIP": {
+            "type": "String",
+            "metadata": {
+                "description": "Unique DNS Name for the Public IP used to access the WAF."
+            }
+            },
+        "wafvmSize": {
+            "allowedValues": [
+                "Standard_DS1_v2",
+                "Standard_DS1_v2",
+                "Standard_D2s_v3",
+                "Standard_D4s_v3"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "Size of instances"
+            }
+            },
+        "managedIdentities": {
+            "type": "string",
+            "allowedValues": [
+                "yes",
+                "no"
+            ],
+            "defaultValue": "no",
+            "metadata": {
+                "description": "Deploy with managed identities"
+            }
+            }
+    },
+    "variables": {
+        "vNetResourceGroup": "[parameters('vNetResourceGroup')]",
+        "virtualnetworkname": "[concat(parameters('VirtualNetworkName'),'-VirtualNetwork')]",
+        "storageaccountname": "[toLower(concat(parameters('AppServerName'),'-storage'))]",
+        "appserverpublicip": "[concat(parameters('AppServerName'),'-PublicIP')]",
+        "appservernsg": "[concat(parameters('AppServerName'),'-nsg')]",
+        "appservernic": "[concat(parameters('AppServerName'),'-NetworkInterface')]",
+        "vnetID": "[resourceId(parameters('VNetResourceGroup'),'Microsoft.Network/virtualNetworks',parameters('VirtualNetworkName'))]",
+        "subnetname": "[concat(parameters('AppServerName'),'-VirtualNetwork-Subnet')]",
+        "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
+        "prefix": "Barracuda",
+        "license": "[parameters('license')]",
+        "numberOfInstances": "[parameters('numberOfInstances')]",
+        "adminPassword": "[parameters('adminPassword')]",
+        "dnsNameForLBIP": "[parameters('dnsNameForLBIP')]",
+        "vmSize": "[parameters('wafvmSize')]",
+        "managedIdentities": "[parameters('managedIdentities')]"
+    },
+    "resources": [
+        {
+            "name": "[variables('storageaccountname')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "Web App Storage Account"
+            },
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "Storage"
+        },
+        {
+            "name": "[variables('appserverpublicip')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-11-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "Web App PublicIPAddress"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[toLower(parameters('AppServerName'))]"
+                }
+            }
+        },
+        {
+            "name": "[variables('appservernsg')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2018-08-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "[concat(variables('appservernsg'),'-nsgRule1')]",
+                        "properties": {
+                            "description": "Inbound Rule for AppServer",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[variables('virtualnetworkname')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-11-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('appservernsg'))]"
+            ],
+            "tags": {
+                "displayName": "VirtualNetwork for the deployment"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('subnetname')]",
+                        "properties": {
+                            "addressPrefix": "10.0.0.0/24",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('AppServerName'),'-nsg'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "[concat('WAFDeploymentSubnet','-VirtualNetwork-Subnet')]",
+                        "properties": {
+                            "addressPrefix": "10.0.1.0/24",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('AppServerName'),'-nsg'))]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[variables('appservernic')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-11-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('appserverpublicip'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualnetworkname'))]"
+            ],
+            "tags": {
+                "displayName": "[variables('appservernic')]"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipConfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('appserverpublicip'))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualnetworkname'), concat(parameters('AppServerName'),'-VirtualNetwork-Subnet'))]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[parameters('AppServerName')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-07-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('AppServerName'),'-NetworkInterface'))]"
+            ],
+            "tags": {
+                "displayName": "[parameters('AppServerName')]"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_A2_v2"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('AppServerName')]",
+                    "adminUsername": "adminUsername",
+                    "adminPassword": "adminPassword"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "Canonical",
+                        "offer": "UbuntuServer",
+                        "sku": "16.04-LTS",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat(parameters('AppServerName'),'-OSDisk')]",
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('appservernic'))]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', toLower(concat(parameters('AppServerName'),'-storage')))).primaryEndpoints.blob]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "linkedDeployment1",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": "wafdeploy.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "adminPassword": {
+                        "value":"[variables('adminPassword')]"
+                    },
+                    "prefix": {
+                        "value": "[variables('prefix')]"
+                    },
+                    "dnsNameForLBIP": {
+                        "value":"[variables('dnsNameForLBIP')]"
+                    },
+                    "vNetResourceGroup": {
+                        "value":"[variables('vNetResourceGroup')]"
+                    },
+                    "vNETName": {
+                        "value":"[variables('virtualnetworkname')]"
+                    },
+                    "subnetName": {
+                        "value":"[variables('subnetname')]"
+                    },
+                    "license": {
+                        "value": "[variables('license')]"
+                    },
+                    "numberOfInstances": {
+                        "value": "[variables('numberOfInstances')]"
+                    },
+                    "vmSize": {
+                        "value": "[variables('vmSize')]"
+                    },
+                    "managedIdentities": {
+                        "value": "[variables('managedIdentities')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

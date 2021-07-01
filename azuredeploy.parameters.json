@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "AppServerName": {
+            "value": "webserver" 
+        },
+        "VirtualNetworkName": {
+            "value": "labvnet" 
+        },
+        "vNetResourceGroup": {
+            "value": "testdrive01" 
+        },
+        "license": {
+            "value": "byol"
+        },
+        "numberOfInstances": {
+            "value": 2
+        },
+        "adminPassword": {
+            "value": "P@$$w0rd@123" 
+        },
+        "dnsNameForLBIP": {
+            "value": "testdrive01.cudalab.com" 
+        },
+        "wafvmSize": {
+            "value": "Standard_D2s_v3"
+        },
+        "managedIdentities": {
+            "value": "no"
+        }
+    }
+}

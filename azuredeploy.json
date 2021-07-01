@@ -15,13 +15,6 @@
             }
         
         },
-        "subnetName": {
-            "type": "string",
-            "metadata": {
-                "description": "description"
-            }
-        },
-        
         "vNetResourceGroup": {
             "type": "String",
             "metadata": {
@@ -78,7 +71,7 @@
                 "description": "Deploy with managed identities"
             }
             },
-            "computeApiVersion": {
+        "computeApiVersion": {
             "type": "string",
             "defaultValue": "2017-03-30",
             "metadata": {
@@ -96,7 +89,6 @@
         "vnetID": "[resourceId(parameters('VNetResourceGroup'),'Microsoft.Network/virtualNetworks',parameters('VirtualNetworkName'))]",
         "subnetname": "[concat(parameters('AppServerName'),'-VirtualNetwork-Subnet')]",
         "wafsubnet": "[concat('WAFDeploymentSubnet','-VirtualNetwork-Subnet')]",
-        "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
         "prefix": "Barracuda",
         "license": "[parameters('license')]",
         "numberOfInstances": "[parameters('numberOfInstances')]",
@@ -104,7 +96,8 @@
         "dnsNameForLBIP": "[parameters('dnsNameForLBIP')]",
         "vmSize": "[parameters('wafvmSize')]",
         "computeApiVersion": "2017-03-30",
-        "managedIdentities": "[parameters('managedIdentities')]"
+        "managedIdentities": "[parameters('managedIdentities')]",
+        "appservername": "[parameters('AppServerName')]"
     },
     "resources": [
         {
@@ -279,14 +272,13 @@
             "name": "linkedDeployment1",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
-            "dependsOn":["[resourceId('Microsoft.Network/virtualNetworks', variables('virtualnetworkname'))]"],
+            "dependsOn":["[resourceId('Microsoft.Network/virtualNetworks', variables('subnetname'))]"],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
                     "uri": "https://raw.githubusercontent.com/selahcloud/barracudawaftestdrive/main/wafdeploy.json",
                     "contentVersion": "1.0.0.0"
                 },
-                
                 "parameters": {
                     "adminPassword": {
                         "value":"[variables('adminPassword')]"

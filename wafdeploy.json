@@ -30,7 +30,7 @@
     "vNETName": {
       "type": "String"
     },
-    "subnetName":{
+    "wafsubnet": {
       "type":"String"
     },
     "license": {
@@ -94,7 +94,7 @@
     "publicIPAddressName": "[concat(variables('wafVmName'),'PIP')]",
     "publicIPAddressType": "Static",
     "vnetID": "[resourceId(parameters('VNetResourceGroup'),'Microsoft.Network/virtualNetworks',parameters('vNETName'))]",
-    "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]",
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('wafsubnet'))]",
     "lbID": "[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName'))]",
     "PublicIPID": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]",
     "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/loadBalancerFrontend')]",

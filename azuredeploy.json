@@ -88,6 +88,7 @@
         "appservernic": "[concat(parameters('AppServerName'),'-NetworkInterface')]",
         "vnetID": "[resourceId(parameters('VNetResourceGroup'),'Microsoft.Network/virtualNetworks',parameters('VirtualNetworkName'))]",
         "subnetname": "[concat(parameters('AppServerName'),'-VirtualNetwork-Subnet')]",
+        "wafsubnet": "[concat('WAFDeploymentSubnet','-VirtualNetwork-Subnet')]",
         "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
         "prefix": "Barracuda",
         "license": "[parameters('license')]",
@@ -179,7 +180,7 @@
                         }
                     },
                     {
-                        "name": "[concat('WAFDeploymentSubnet','-VirtualNetwork-Subnet')]",
+                        "name": "[variables('wafsubnet')]",
                         "properties": {
                             "addressPrefix": "10.0.1.0/24",
                             "networkSecurityGroup": {
@@ -298,7 +299,7 @@
                         "value":"[variables('virtualnetworkname')]"
                     },
                     "subnetName": {
-                        "value":"[variables('subnetname')]"
+                        "value":"[variables('wafsubnet')]"
                     },
                     "license": {
                         "value": "[variables('license')]"

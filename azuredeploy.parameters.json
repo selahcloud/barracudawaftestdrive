@@ -3,13 +3,13 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "AppServerName": {
-            "value": "webserver" 
+            "value": "webserver123" 
         },
         "VirtualNetworkName": {
             "value": "labvnet" 
         },
         "vNetResourceGroup": {
-            "value": "testdrive01" 
+            "value": "testdrive" 
         },
         "license": {
             "value": "byol"

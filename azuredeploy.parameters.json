@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "AppServerName": {
-            "value": "webserver123" 
+            "value": "webserver111" 
         },
         "VirtualNetworkName": {
             "value": "labvnet" 

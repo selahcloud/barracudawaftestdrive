@@ -18,7 +18,7 @@
             "value": 2
         },
         "adminPassword": {
-            "value": "Passw0rd123!" 
+            "value": "Passw0rd123" 
         },
         "dnsNameForLBIP": {
             "value": "testdrive" 

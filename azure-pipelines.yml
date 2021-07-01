@@ -17,7 +17,7 @@ steps:
     azureResourceManagerConnection: 'cudawaftestdrivenew'
     subscriptionId: '490510b5-6cc9-41de-95e9-44e31b0f3f36'
     action: 'Create Or Update Resource Group'
-    resourceGroupName: 'aravindan-rm-pipeline-new-1'
+    resourceGroupName: 'aravindan-rm-pipeline-new'
     location: 'South Central US'
     templateLocation: 'URL of the file'
     csmFileLink: 'https://raw.githubusercontent.com/selahcloud/barracudawaftestdrive/main/azuredeploy.json'

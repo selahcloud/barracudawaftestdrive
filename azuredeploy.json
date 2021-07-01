@@ -73,7 +73,7 @@
             },
             "computeApiVersion": {
             "type": "string",
-            "defaultValue": "2020-10-01",
+            "defaultValue": "2017-03-30",
             "metadata": {
                 "description": "description"
             }

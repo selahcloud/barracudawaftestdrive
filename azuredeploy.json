@@ -73,6 +73,7 @@
             }
     },
     "variables": {
+        "storageaccountname": "[concat(parameters('AppServerName'),'001storage')]",
         "vNetResourceGroup": "[parameters('vNetResourceGroup')]",
         "virtualnetworkname": "[concat(parameters('VirtualNetworkName'),'-VirtualNetwork')]",
         "appserverpublicip": "[concat(parameters('AppServerName'),'-PublicIP')]",
@@ -90,6 +91,20 @@
         "managedIdentities": "[parameters('managedIdentities')]"
     },
     "resources": [
+        {
+            "name": "[variables('storageaccountname')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "tags": {
+                "displayName": "storageaccount1"
+            },
+            "location": "[resourceGroup().location]",
+            "kind": "StorageV2",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            }
+        },
         {
             "name": "[variables('appserverpublicip')]",
             "type": "Microsoft.Network/publicIPAddresses",
@@ -240,7 +255,7 @@
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', toLower(concat(parameters('AppServerName'),'-storage')))).primaryEndpoints.blob]"
+                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageaccountname'))).primaryEndpoints.blob]"
                     }
                 }
             }

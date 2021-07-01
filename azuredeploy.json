@@ -75,7 +75,6 @@
     "variables": {
         "vNetResourceGroup": "[parameters('vNetResourceGroup')]",
         "virtualnetworkname": "[concat(parameters('VirtualNetworkName'),'-VirtualNetwork')]",
-        "storageaccountname": "[toLower(concat(parameters('AppServerName'),'001storage'))]",
         "appserverpublicip": "[concat(parameters('AppServerName'),'-PublicIP')]",
         "appservernsg": "[concat(parameters('AppServerName'),'-nsg')]",
         "appservernic": "[concat(parameters('AppServerName'),'-NetworkInterface')]",
@@ -91,19 +90,6 @@
         "managedIdentities": "[parameters('managedIdentities')]"
     },
     "resources": [
-        {
-            "name": "[variables('storageaccountname')]",
-            "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2019-06-01",
-            "location": "[resourceGroup().location]",
-            "tags": {
-                "displayName": "Web App Storage Account"
-            },
-            "sku": {
-                "name": "Standard_LRS"
-            },
-            "kind": "Storage"
-        },
         {
             "name": "[variables('appserverpublicip')]",
             "type": "Microsoft.Network/publicIPAddresses",

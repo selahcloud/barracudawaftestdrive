@@ -18,10 +18,10 @@
             "value": 2
         },
         "adminPassword": {
-            "value": "P@$$w0rd@123" 
+            "value": "P@$$w0rd123" 
         },
         "dnsNameForLBIP": {
-            "value": "testdrive01.cudalab.com" 
+            "value": "testdrive.cudalab.com" 
         },
         "wafvmSize": {
             "value": "Standard_D2s_v3"

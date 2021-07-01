@@ -15,6 +15,13 @@
             }
         
         },
+        "subnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        
         "vNetResourceGroup": {
             "type": "String",
             "metadata": {

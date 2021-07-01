@@ -96,7 +96,7 @@
         "adminPassword": "[parameters('adminPassword')]",
         "dnsNameForLBIP": "[parameters('dnsNameForLBIP')]",
         "vmSize": "[parameters('wafvmSize')]",
-        "computeApiVersion": "2020-10-01",
+        "computeApiVersion": "2017-03-30",
         "managedIdentities": "[parameters('managedIdentities')]"
     },
     "resources": [

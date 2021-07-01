@@ -18,7 +18,7 @@
         "vNetResourceGroup": {
             "type": "String",
             "metadata": {
-                "description": "The name of the vNETs resource group"
+                "description": "The name of the vnet resource group"
             }
             },
         "license": {

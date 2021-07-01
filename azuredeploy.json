@@ -70,6 +70,13 @@
             "metadata": {
                 "description": "Deploy with managed identities"
             }
+            },
+            "computeApiVersion": {
+            "type": "string",
+            "defaultValue": "2020-10-01",
+            "metadata": {
+                "description": "description"
+            }
             }
     },
     "variables": {
@@ -88,6 +95,7 @@
         "adminPassword": "[parameters('adminPassword')]",
         "dnsNameForLBIP": "[parameters('dnsNameForLBIP')]",
         "vmSize": "[parameters('wafvmSize')]",
+        "computeApiVersion": "2020-10-01",
         "managedIdentities": "[parameters('managedIdentities')]"
     },
     "resources": [
@@ -101,8 +109,7 @@
             "location": "[resourceGroup().location]",
             "kind": "StorageV2",
             "sku": {
-                "name": "Premium_LRS",
-                "tier": "Premium"
+                "name": "Standard_LRS"
             }
         },
         {
@@ -260,6 +267,7 @@
                 }
             }
         },
+
         {
             "name": "linkedDeployment1",
             "type": "Microsoft.Resources/deployments",
@@ -279,6 +287,9 @@
                     },
                     "dnsNameForLBIP": {
                         "value":"[variables('dnsNameForLBIP')]"
+                    },
+                    "computeApiVersion": {
+                        "value": "[variables('computeApiVersion')]"
                     },
                     "vNetResourceGroup": {
                         "value":"[variables('vNetResourceGroup')]"

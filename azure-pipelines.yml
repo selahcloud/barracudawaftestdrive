@@ -8,6 +8,8 @@ trigger:
 
 pool:
   vmImage: ubuntu-latest
+  demands: testdrive
+  name: mypool
 
 steps:
 - task: AzureResourceManagerTemplateDeployment@3

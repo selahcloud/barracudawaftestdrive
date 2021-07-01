@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "AppServerName": {
-            "value": "webserver111" 
+            "value": "webserver1" 
         },
         "VirtualNetworkName": {
             "value": "labvnet" 
@@ -18,10 +18,10 @@
             "value": 2
         },
         "adminPassword": {
-            "value": "P@$$w0rd123" 
+            "value": "Passw0rd123!" 
         },
         "dnsNameForLBIP": {
-            "value": "testdrive.cudalab.com" 
+            "value": "testdrive" 
         },
         "wafvmSize": {
             "value": "Standard_D2s_v3"

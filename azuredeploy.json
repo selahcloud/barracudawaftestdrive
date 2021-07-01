@@ -229,8 +229,8 @@
                 },
                 "osProfile": {
                     "computerName": "[parameters('AppServerName')]",
-                    "adminUsername": "adminUsername",
-                    "adminPassword": "adminPassword"
+                    "adminUsername": "labuser",
+                    "adminPassword": "[variables('adminPassword')]"
                 },
                 "storageProfile": {
                     "imageReference": {

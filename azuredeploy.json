@@ -328,11 +328,11 @@
 
         },
         "ServerPublicIP": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Network/networkInterfaces', variables('appservernic')))]"
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Network/networkInterfaces', variables('appservernic'))).provisioningState]"
         },
         "ServerNetworkSecurityGroup": {
-            "type": "object",
+            "type": "string",
             "value": "[reference(resourceId('Microsoft.Network/networkSecurityGroups', variables('appservernsg')))]"
         },
         "VirtualNetwork": {

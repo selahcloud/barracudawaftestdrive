@@ -318,14 +318,26 @@
     ],
     "outputs": {
 
-        "ServerPublicIP": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('appserverpublicip')))]"
+        "ServerDNSName": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('appserverpublicip'))).dnsSettings.fqdn]"
         },
         "ServerHostName": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Network/networkInterfaces',variables('appservernic')))]"
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Network/networkInterfaces',variables('appservernic'))).dnsSettings.domainNameLabel]"
 
+        },
+        "ServerPublicIP": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Network/networkInterfaces', variables('appservernic'))).ipConfigurations.publicIPAddress]"
+        },
+        "ServerNetworkSecurityGroup": {
+            "type": "object",
+            "value": "[reference(resourceId('Microsoft.Network/networkSecurityGroups', variables('appservernsg')))]"
+        },
+        "VirtualNetwork": {
+            "type": "object",
+            "value": "[reference(resourceId('Microsoft.Network/virtualNetworks',variables('virtualnetworkname')))]"
         }
     }
 }

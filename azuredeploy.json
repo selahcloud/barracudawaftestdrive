@@ -83,6 +83,8 @@
             }
     },
     "variables": {
+        "_artifactsLocation": "https://raw.githubusercontent.com/selahcloud/barracudawaftestdrive/main/",
+        "_artifactsLocationSasToken": "",
         "storageaccountname": "[concat(parameters('AppServerName'),'001storage')]",
         "vNetResourceGroup": "[parameters('vNetResourceGroup')]",
         "virtualnetworkname": "[concat(parameters('VirtualNetworkName'),'-VirtualNetwork')]",
@@ -268,6 +270,32 @@
             }
         },
         {
+            "name": "[concat(parameters('AppServerName'),'/customScript1')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-07-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "customScript1 for Linux VM"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('AppServerName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.1",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [
+                        "[concat(variables('_artifactsLocation'), '/scripts/customScript.sh', variables('_artifactsLocationSasToken'))]"
+                    ]
+                },
+                "protectedSettings": {
+                    "commandToExecute": "bash customScript.sh"
+                }
+            }
+        },
+        {
             "name": "linkedDeployment1",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
@@ -327,17 +355,13 @@
             "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('appserverpublicip'))).dnsSettings.domainNameLabel]"
 
         },
-        "ServerPublicIP": {
-            "type": "object",
-            "value": "[reference(variables('appservernic'))]"
-        },
         "ServerNetworkSecurityGroup": {
             "type": "object",
             "value": "[reference(resourceId('Microsoft.Network/networkSecurityGroups', variables('appservernsg')))]"
         },
-        "VirtualNetwork": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Network/virtualNetworks',variables('virtualnetworkname')))]"
+        "ServerSubnet": {
+            "type": "array",
+            "value": "[reference(resourceId('Microsoft.Network/virtualNetworks',variables('virtualnetworkname'))).subnets]"
         }
     }
 }

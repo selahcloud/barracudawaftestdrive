@@ -443,15 +443,5 @@
         ]
       }
     }
-  ],
-  "outputs": {
-    "LoadBalancerPublicIP": {
-      "type": "string",
-      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName')))]"
-    },
-    "AvailabilitySet": {
-      "type": "string",
-      "value": "[reference(resourceId('Microsoft.Compute/availabilitySets', variables('WAFAVSetName')))]"
-    }
-  }
+  ]
 }

@@ -329,7 +329,11 @@
         },
         "LoadBalancerPublicIP": {
             "type": "string",
-            "value": "[reference(resourceId('Microsoft.Resources/deployments','linkedDeployment1')).outputs.LoadBalancerPublicIP.value]"
+            "value": "[reference('linkedTemplate1').outputs.LoadBalancerPublicIP]"
+        },
+        "AvailabilitySetName": {
+            "type": "string",
+            "value": "[reference('linkedTemplate1').outputs.AvailabilitySetName]"
         }
     }
 }

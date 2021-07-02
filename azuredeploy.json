@@ -319,21 +319,21 @@
     "outputs": {
 
         "ServerPublicIP": {
-            "type": "string",
+            "type": "object",
             "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('appserverpublicip')))]"
         },
         "ServerHostName": {
-            "type": "string",
+            "type": "object",
             "value": "[reference(resourceId('Microsoft.Network/networkInterfaces',variables('appservernic')))]"
 
         },
         "LoadBalancerPublicIP": {
             "type": "string",
-            "value": "[reference('linkedDeployment1').outputs.LoadBalancerPublicIP]"
+            "value": "[reference('linkedDeployment1').outputResources.LoadBalancerPublicIP]"
         },
         "AvailabilitySetName": {
             "type": "string",
-            "value": "[reference('linkedDeployment1').outputs.AvailabilitySetName]"
+            "value": "[reference('linkedDeployment1').outputResources.AvailabilitySetName]"
         }
     }
 }

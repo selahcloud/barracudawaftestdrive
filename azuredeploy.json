@@ -316,5 +316,20 @@
             }
         }
     ],
-    "outputs": {}
+    "outputs": {
+
+        "ServerPublicIP": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('appserverpublicip')))]"
+        },
+        "ServerHostName": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Network/networkInterfaces',variables('appservernic')))]"
+
+        },
+        "LoadBalancerPublicIP": {
+            "type": "string",
+            "value": "[reference('linkedTemplate1').outputs.LoadBalancerPublicIP]"
+        }
+    }
 }

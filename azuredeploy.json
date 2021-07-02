@@ -286,9 +286,9 @@
                 "typeHandlerVersion": "2.1",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    "fileUris": [
-                        "[concat(variables('_artifactsLocation'), '/scripts/customScript.sh', variables('_artifactsLocationSasToken'))]"
-                    ]
+                    "fileUris": 
+                        ["https://raw.githubusercontent.com/selahcloud/barracudawaftestdrive/main/script/customScript.sh"]
+                    
                 },
                 "protectedSettings": {
                     "commandToExecute": "bash customScript.sh"

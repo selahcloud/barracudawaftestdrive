@@ -85,7 +85,7 @@
     "variables": {
         "_artifactsLocation": "https://raw.githubusercontent.com/selahcloud/barracudawaftestdrive/main/",
         "_artifactsLocationSasToken": "",
-        "storageaccountname": "[concat(parameters('AppServerName'),'001storage')]",
+        "storageaccountname": "[concat(parameters('AppServerName'),uniquestring(resourceGroup().id))]",
         "vNetResourceGroup": "[parameters('vNetResourceGroup')]",
         "virtualnetworkname": "[concat(parameters('VirtualNetworkName'),'-VirtualNetwork')]",
         "appserverpublicip": "[concat(parameters('AppServerName'),'-PublicIP')]",
@@ -97,7 +97,7 @@
         "license": "[parameters('license')]",
         "numberOfInstances": "[parameters('numberOfInstances')]",
         "adminPassword": "[parameters('adminPassword')]",
-        "dnsNameForLBIP": "[parameters('dnsNameForLBIP')]",
+        "dnsNameForLBIP": "[concat(parameters('dnsNameForLBIP'),uniquestring(resourceGroup().id))]",
         "vmSize": "[parameters('wafvmSize')]",
         "computeApiVersion": "2017-03-30",
         "managedIdentities": "[parameters('managedIdentities')]",

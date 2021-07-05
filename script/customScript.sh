@@ -1,10 +1,12 @@
 #! /bin/bash
 
 sudo apt-get -y update
-sudo apt install docker.io -y
+sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 sudo systemctl start docker
 sudo systemctl enable docker
 sudo groupadd docker
 sudo usermod -aG docker ${USER}
-docker pull selahcloud/newbadstore:latest
-docker run -it -p 80:80 selahcloud/newbadstore:latest
+sudo docker pull selahcloud/newbadstore:latest
+sudo docker run -it -p 80:80 selahcloud/newbadstore:latest

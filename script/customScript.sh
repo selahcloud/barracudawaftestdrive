@@ -10,6 +10,5 @@ sudo apt-get -y install docker-ce
 sudo systemctl start docker
 sudo systemctl enable docker
 sudo groupadd docker
-sudo usermod -aG docker ${USER}
 sudo docker pull selahcloud/newbadstore:latest
 sudo docker run -it -p 80:80 selahcloud/newbadstore:latest

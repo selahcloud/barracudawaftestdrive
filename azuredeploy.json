@@ -152,6 +152,20 @@
                             "priority": 100,
                             "direction": "Inbound"
                         }
+                    },
+                    {
+                        "name": "[concat(variables('appservernsg'),'-nsgRule2')]",
+                        "properties": {
+                            "description": "Inbound HTTP Rule for AppServer",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "80",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 101,
+                            "direction": "Inbound"
+                        }
                     }
                 ]
             }
@@ -291,7 +305,7 @@
                     
                 },
                 "protectedSettings": {
-                    "commandToExecute": "bash customScript.sh"
+                    "commandToExecute": "nohup bash customScript.sh"
                 }
             }
         },

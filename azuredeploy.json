@@ -34,7 +34,7 @@
     "functions": [],
     "variables": {
         "servervm": "[toLower(parameters('ServerVMName'))]",
-        "serverstorage": "[concat('storage', uniquestring(resourceGroup().id))]",
+        "serverstorage": "[concat(variables('servervm'), uniquestring(resourceGroup().id))]",
         "serverpublicip": "[concat(variables('servervm'), '-PublicIP')]",
         "servernsg": "[concat(variables('servervm'), '-nsg')]",
         "vNETName": "[concat(parameters('VirtualNetwork'), '-VirtualNetwork')]",
@@ -43,7 +43,7 @@
         "serverpassword": "[parameters('ServerPassword')]",
         "wafsubnet": "[concat(variables('vNETName'), '-WAF', '-Subnet')]",
         "wafvmname": "[parameters('WafVmName')]",
-        "wafstorage": "[tolower(concat('storage', uniquestring(resourceGroup().id)))]",
+        "wafstorage": "[tolower(concat(variables('wafvmname'), uniquestring(resourceGroup().id)))]",
         "wafpublicip": "[concat(parameters('WafVmName'), '-PublicIP')]",
         "wafnsg": "[concat(parameters('WafVmName'), '-nsg')]",
         "wafnic": "[concat(parameters('WafVmName'), '-NetworkInterface')]",

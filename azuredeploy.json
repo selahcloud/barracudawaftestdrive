@@ -2,147 +2,98 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "AppServerName": {
+        "ServerVMName": {
             "type": "string",
             "metadata": {
-                "description": "Web App Name"
+                "description": "Provide a friendly name for the web app"
             }
         },
-        "VirtualNetworkName": {
-            "type": "string",
-            "metadata": {
-                "description": "Virtual Network for this deployment"
-            }
-        
+        "VirtualNetwork": {
+            "type": "string"
         },
-        "wafsubnet": {
-            "type": "String"
+        "ServerPassword": {
+            "type": "securestring",
+            "metadata": {
+
+                "description": "Password to access the server over ssh"
+            }
         },
-        "vNetResourceGroup": {
-            "type": "String",
-            "metadata": {
-                "description": "The name of the vnet resource group"
-            }
-            },
-        "license": {
-            "allowedValues": [
-                "hourly",
-                "byol"
-            ],
-            "type": "String",
-            "metadata": {
-                "description": "Hourly (PAYG) or BYOL (Bring your own) license"
-            },
-            "defaultValue": "byol"
-            },
-        "numberOfInstances": {
-            "defaultValue": 2,
-            "type": "Int"
-            },
-        "adminPassword": {
-            "type": "SecureString",
-            "metadata": {
-                "description": "Password for the Virtual Machine."
-            }
-            },
-        "dnsNameForLBIP": {
-            "type": "String",
-            "metadata": {
-                "description": "Unique DNS Name for the Public IP used to access the WAF."
-            }
-            },
-        "wafvmSize": {
-            "allowedValues": [
-                "Standard_DS1_v2",
-                "Standard_DS1_v2",
-                "Standard_D2s_v3",
-                "Standard_D4s_v3"
-            ],
-            "type": "String",
-            "metadata": {
-                "description": "Size of instances"
-            }
-            },
-        "managedIdentities": {
+        "WafVmName": {
             "type": "string",
-            "allowedValues": [
-                "yes",
-                "no"
-            ],
-            "defaultValue": "no",
             "metadata": {
-                "description": "Deploy with managed identities"
+                "description": "Provide a friendly name for the web app"
             }
-            },
-        "computeApiVersion": {
-            "type": "string",
-            "defaultValue": "2017-03-30",
+        },
+        "WafPassword": {
+            "type": "securestring",
             "metadata": {
-                "description": "description"
+                "description": "WAF Login Password"
             }
-            }
+        }
     },
+    "functions": [],
     "variables": {
-        "_artifactsLocation": "https://raw.githubusercontent.com/selahcloud/barracudawaftestdrive/main/",
-        "_artifactsLocationSasToken": "",
-        "storageaccountname": "[concat(parameters('AppServerName'),uniquestring(resourceGroup().id))]",
-        "vNetResourceGroup": "[parameters('vNetResourceGroup')]",
-        "virtualnetworkname": "[concat(parameters('VirtualNetworkName'),'-VirtualNetwork')]",
-        "appserverpublicip": "[concat(parameters('AppServerName'),'-PublicIP')]",
-        "appservernsg": "[concat(parameters('AppServerName'),'-nsg')]",
-        "appservernic": "[concat(parameters('AppServerName'),'-NetworkInterface')]",
-        "vnetID": "[resourceId(parameters('VNetResourceGroup'),'Microsoft.Network/virtualNetworks',parameters('VirtualNetworkName'))]",
-        "serversubnetname": "[concat(parameters('AppServerName'),'-VirtualNetwork-Subnet')]",
-        "prefix": "Barracuda",
-        "license": "[parameters('license')]",
-        "numberOfInstances": "[parameters('numberOfInstances')]",
-        "adminPassword": "[parameters('adminPassword')]",
-        "dnsNameForLBIP": "[concat(parameters('dnsNameForLBIP'),uniquestring(resourceGroup().id))]",
-        "vmSize": "[parameters('wafvmSize')]",
-        "computeApiVersion": "2017-03-30",
-        "managedIdentities": "[parameters('managedIdentities')]",
-        "appservername": "[parameters('AppServerName')]"
+        "servervm": "[toLower(parameters('ServerVMName'))]",
+        "serverstorage": "[concat(variables('servervm'), 'storage')]",
+        "serverpublicip": "[concat(variables('servervm'), '-PublicIP')]",
+        "servernsg": "[concat(variables('servervm'), '-nsg')]",
+        "vNETName": "[concat(parameters('VirtualNetwork'), '-VirtualNetwork')]",
+        "servernic": "[concat(variables('servervm'), '-NetworkInterface')]",
+        "serversubnet": "[concat(variables('vNETName'), variables('servervm'), '-Subnet')]",
+        "serverpassword": "[parameters('ServerPassword')]",
+        "wafsubnet": "[concat(variables('vNETName'), '-WAF', '-Subnet')]",
+        "wafvmname": "[parameters('WafVmName')]",
+        "wafstorage": "[tolower(concat(parameters('WafVmName'), 'storage'))]",
+        "wafpublicip": "[concat(parameters('WafVmName'), '-PublicIP')]",
+        "wafnsg": "[concat(parameters('WafVmName'), '-nsg')]",
+        "wafnic": "[concat(parameters('WafVmName'), '-NetworkInterface')]",
+        "wafpassword": "[parameters('WafPassword')]",
+        "wafpublisher": "barracudanetworks",
+        "wafoffer": "waf",
+        "wafsku": "byol"
+
     },
     "resources": [
+
         {
-            "name": "[variables('storageaccountname')]",
+            "name": "[toLower(variables('serverstorage'))]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
-            "tags": {
-                "displayName": "storageaccounts"
-            },
             "location": "[resourceGroup().location]",
-            "kind": "StorageV2",
+            "tags": {
+                "displayName": "Server Storage Account"
+            },
             "sku": {
                 "name": "Standard_LRS"
-            }
+            },
+            "kind": "Storage"
         },
         {
-            "name": "[variables('appserverpublicip')]",
+            "name": "[variables('serverpublicip')]",
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2019-11-01",
             "location": "[resourceGroup().location]",
             "tags": {
-                "displayName": "Web App PublicIPAddress"
+                "displayName": "PublicIPAddress"
             },
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "[toLower(concat(parameters('AppServerName'), parameters('VirtualNetworkName')))]"
+                    "domainNameLabel": "[toLower(variables('servervm'))]"
                 }
             }
         },
         {
-            "name": "[variables('appservernsg')]",
+            "name": "[variables('servernsg')]",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2018-08-01",
             "location": "[resourceGroup().location]",
             "properties": {
                 "securityRules": [
                     {
-                        "name": "[concat(variables('appservernsg'),'-nsgRule1')]",
+                        "name": "nsgRule1",
                         "properties": {
-                            "description": "Inbound Rule for AppServer",
+                            "description": "description",
                             "protocol": "Tcp",
                             "sourcePortRange": "*",
                             "destinationPortRange": "22",
@@ -154,9 +105,9 @@
                         }
                     },
                     {
-                        "name": "[concat(variables('appservernsg'),'-nsgRule2')]",
+                        "name": "nsgRule2",
                         "properties": {
-                            "description": "Inbound HTTP Rule for AppServer",
+                            "description": "description",
                             "protocol": "Tcp",
                             "sourcePortRange": "*",
                             "destinationPortRange": "80",
@@ -171,15 +122,15 @@
             }
         },
         {
-            "name": "[variables('virtualnetworkname')]",
+            "name": "[variables('vNETName')]",
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2019-11-01",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('appservernsg'))]"
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('servernsg'))]"
             ],
             "tags": {
-                "displayName": "VirtualNetwork for the deployment"
+                "displayName": "[variables('vNETName')]"
             },
             "properties": {
                 "addressSpace": {
@@ -189,34 +140,35 @@
                 },
                 "subnets": [
                     {
-                        "name": "[variables('serversubnetname')]",
+                        "name": "[variables('serversubnet')]",
                         "properties": {
                             "addressPrefix": "10.0.0.0/24",
                             "networkSecurityGroup": {
-                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('AppServerName'),'-nsg'))]"
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('servernsg'))]"
                             }
                         }
                     },
                     {
-                        "name": "[parameters('wafsubnet')]",
+                        "name": "[variables('wafsubnet')]",
                         "properties": {
                             "addressPrefix": "10.0.1.0/24"
                         }
                     }
+
                 ]
             }
         },
         {
-            "name": "[variables('appservernic')]",
+            "name": "[variables('servernic')]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-11-01",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses', variables('appserverpublicip'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualnetworkname'))]"
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('serverpublicip'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('vNETName'))]"
             ],
             "tags": {
-                "displayName": "[variables('appservernic')]"
+                "displayName": "[variables('servernic')]"
             },
             "properties": {
                 "ipConfigurations": [
@@ -225,10 +177,10 @@
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
                             "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('appserverpublicip'))]"
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('serverpublicip'))]"
                             },
                             "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualnetworkname'), variables('serversubnetname'))]"
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNETName'), variables('serversubnet'))]"
                             }
                         }
                     }
@@ -236,24 +188,24 @@
             }
         },
         {
-            "name": "[parameters('AppServerName')]",
+            "name": "[variables('servervm')]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-07-01",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('AppServerName'),'-NetworkInterface'))]"
+                "[resourceId('Microsoft.Network/networkInterfaces', variables('servernic'))]"
             ],
             "tags": {
-                "displayName": "[parameters('AppServerName')]"
+                "displayName": "[variables('servervm')]"
             },
             "properties": {
                 "hardwareProfile": {
                     "vmSize": "Standard_A2_v2"
                 },
                 "osProfile": {
-                    "computerName": "[parameters('AppServerName')]",
+                    "computerName": "[variables('servervm')]",
                     "adminUsername": "labuser",
-                    "adminPassword": "[variables('adminPassword')]"
+                    "adminPassword": "[variables('serverpassword')]"
                 },
                 "storageProfile": {
                     "imageReference": {
@@ -263,7 +215,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "[concat(parameters('AppServerName'),'-OSDisk')]",
+                        "name": "[concat(variables('servervm'),'-OSDisk')]",
                         "caching": "ReadWrite",
                         "createOption": "FromImage"
                     }
@@ -271,20 +223,21 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('appservernic'))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('servernic'))]"
                         }
                     ]
                 },
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageaccountname'))).primaryEndpoints.blob]"
+                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('serverstorage'))).primaryEndpoints.blob]"
                     }
                 }
             }
         },
+
         {
-            "name": "[concat(parameters('AppServerName'),'/customScript1')]",
+            "name": "[concat(variables('servervm'), '/customScript1')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-07-01",
             "location": "[resourceGroup().location]",
@@ -292,7 +245,7 @@
                 "displayName": "customScript1 for Linux VM"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', parameters('AppServerName'))]"
+                "[resourceId('Microsoft.Compute/virtualMachines', variables('servervm'))]"
             ],
             "properties": {
                 "publisher": "Microsoft.Azure.Extensions",
@@ -300,82 +253,218 @@
                 "typeHandlerVersion": "2.1",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    "fileUris": 
-                        ["https://raw.githubusercontent.com/selahcloud/barracudawaftestdrive/main/script/customScript.sh"]
-                    
+                    "fileUris": [
+                        "https://raw.githubusercontent.com/selahcloud/barracudawaftestdrive/main/script/customScript.sh"
+                    ]
                 },
                 "protectedSettings": {
-                    "commandToExecute": "nohup bash customScript.sh"
+                    "commandToExecute": "sudo nohup bash customScript.sh"
                 }
             }
         },
         {
-            "name": "linkedDeployment1",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
-            
+            "name": "[variables('wafstorage')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "WAF Storage Account"
+            },
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "Storage"
+        },
+        {
+            "name": "[variables('wafpublicip')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-11-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "PublicIPAddress"
+            },
             "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/selahcloud/barracudawaftestdrive/main/wafdeploy.json",
-                    "contentVersion": "1.0.0.0"
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[variables('wafvmname')]"
+                }
+            }
+        },
+        {
+            "name": "[variables('wafnsg')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2018-08-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "nsgRule1",
+                        "properties": {
+                            "description": "description",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "8443",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "nsgRule2",
+                        "properties": {
+                            "description": "description",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "8000",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 101,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "nsgRule3",
+                        "properties": {
+                            "description": "description",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "80",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 102,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "nsgRule4",
+                        "properties": {
+                            "description": "description",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "443",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 103,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[variables('wafnic')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-11-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('wafpublicip'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('vNETName'))]"
+            ],
+            "tags": {
+                "displayName": "[variables('wafnic')]"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipConfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('wafpublicip'))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNETName'), variables('wafsubnet'))]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[variables('wafvmname')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-07-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', variables('wafnic'))]"
+            ],
+            "tags": {
+                "displayName": "[variables('wafvmname')]"
+            },
+            "plan": {
+                "name": "[variables('wafsku')]",
+                "Product": "[variables('wafoffer')]",
+                "Publisher": "barracudanetworks"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_DS2_v2"
                 },
-                "parameters": {
-                    "adminPassword": {
-                        "value":"[variables('adminPassword')]"
+                "osProfile": {
+                    "computerName": "[variables('wafvmname')]",
+                    "adminUsername": "adminUsername",
+                    "adminPassword": "[variables('wafpassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('wafpublisher')]",
+                        "offer": "[variables('wafoffer')]",
+                        "sku": "[variables('wafsku')]",
+                        "version": "latest"
                     },
-                    "prefix": {
-                        "value": "[variables('prefix')]"
-                    },
-                    "dnsNameForLBIP": {
-                        "value":"[variables('dnsNameForLBIP')]"
-                    },
-                    "computeApiVersion": {
-                        "value": "[variables('computeApiVersion')]"
-                    },
-                    "vNetResourceGroup": {
-                        "value":"[variables('vNetResourceGroup')]"
-                    },
-                    "vNETName": {
-                        "value":"[variables('virtualnetworkname')]"
-                    },
-                    "wafsubnet": {
-                        "value":"[parameters('wafsubnet')]"
-                    },
-                    "license": {
-                        "value": "[variables('license')]"
-                    },
-                    "numberOfInstances": {
-                        "value": "[variables('numberOfInstances')]"
-                    },
-                    "vmSize": {
-                        "value": "[variables('vmSize')]"
-                    },
-                    "managedIdentities": {
-                        "value": "[variables('managedIdentities')]"
+                    "osDisk": {
+                        "name": "[concat(variables('wafvmname'), '-OSDisk')]",
+                        "createOption": "FromImage"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('wafnic'))]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', toLower(variables('wafstorage')))).primaryEndpoints.blob]"
                     }
                 }
             }
         }
     ],
     "outputs": {
-
-        "ServerDNSName": {
-            "type": "string",
-            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('appserverpublicip'))).dnsSettings.fqdn]"
-        },
-        "ServerHostName": {
-            "type": "string",
-            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('appserverpublicip'))).dnsSettings.domainNameLabel]"
-
-        },
-        "ServerNetworkSecurityGroup": {
+        "VirtualNetwork": {
             "type": "object",
-            "value": "[reference(resourceId('Microsoft.Network/networkSecurityGroups', variables('appservernsg')))]"
+            "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', variables('vNETName')))]"
         },
-        "ServerSubnet": {
-            "type": "array",
-            "value": "[reference(resourceId('Microsoft.Network/virtualNetworks',variables('virtualnetworkname'))).subnets]"
+        "Server": {
+            "type": "object",
+            "value":"[reference(resourceId('Microsoft.Compute/virtualMachines',variables('servervm')))]"    
+
+        },
+        "ServerNIC": {
+            "type": "object",
+            "value": "[reference(resourceId('Microsoft.Network/networkInterfaces',variables('servernic')))]"
+        },
+        "Vnetname": {
+            "type": "object",
+            "value": "[reference(variables('vNETName'))]"
+        },
+        "WAF": {
+            "type": "object",
+            "value": "[reference(resourceId('Microsoft.Compute/virtualMachines',variables('wafvmname')))]"
+        },
+
+        "WAFPublicIP": {
+            "type": "object",
+            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('wafpublicip')))]"
         }
+
     }
 }

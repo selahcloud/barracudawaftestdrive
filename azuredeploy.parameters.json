@@ -2,38 +2,20 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "AppServerName": {
-            "value": "webserver1" 
+        "ServerVMName": {
+            "value": "badstore1" 
         },
-        "VirtualNetworkName": {
-            "value": "labvnet" 
+        "VirtualNetwork": {
+            "value": "vnet1" 
         },
-        "wafsubnet":{
-            "value": "WAFDeploymentSubnet"
+        "ServerPassword": {
+            "value": "Pa$$w0rd123" 
         },
-        "vNetResourceGroup": {
-            "value": "aravindan-rm-pipeline-new" 
+        "WafVmName": {
+            "value": "waf1" 
         },
-        "license": {
-            "value": "byol"
-        },
-        "computeApiVersion":{
-            "value": "2020-10-01"
-        },
-        "numberOfInstances": {
-            "value": 2
-        },
-        "adminPassword": {
-            "value": "Passw0rd123" 
-        },
-        "dnsNameForLBIP": {
-            "value": "testdrive" 
-        },
-        "wafvmSize": {
-            "value": "Standard_D2s_v3"
-        },
-        "managedIdentities": {
-            "value": "no"
+        "WafPassword": {
+            "value": "P@$$w0rd123" 
         }
     }
 }

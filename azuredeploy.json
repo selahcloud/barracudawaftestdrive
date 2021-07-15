@@ -17,7 +17,7 @@
         }
     },
     "variables": {
-        "servervm": "[toLower('badstore1')]",
+        "servervm": "[toLower('app1')]",
         "serverstorage": "[concat(variables('servervm'), uniquestring(resourceGroup().id))]",
         "serverpublicip": "[concat(variables('servervm'), '-PublicIP')]",
         "servernsg": "[concat(variables('servervm'), '-nsg')]",
@@ -440,9 +440,13 @@
             "type": "string",
             "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('serverpublicip'))).dnsSettings.fqdn]"
         },
-        "ServerListeningPorts": {
+        "BadstoreFQDN": {
             "type": "string",
-            "value": "80 and 8080"
+            "value": "[concat('http://',reference(resourceId('Microsoft.Network/publicIPAddresses',variables('serverpublicip'))).dnsSettings.fqdn)]"
+        },
+        "PetstoreFQDN": {
+            "type": "string",
+            "value": "[concat('http://',reference(resourceId('Microsoft.Network/publicIPAddresses',variables('serverpublicip'))).dnsSettings.fqdn,':8080')]"
         },
         "WAFPublicIP": {
             "type": "string",

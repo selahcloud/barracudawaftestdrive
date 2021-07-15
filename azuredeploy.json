@@ -438,7 +438,7 @@
     "outputs": {
         "ServerPublicIP": {
             "type": "object",
-            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('serverpublicip'))).value.dnsSettings.fqdn]"
+            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('serverpublicip'))).dnsSettings.fqdn]"
         },
         "ServerListeningPorts": {
             "type": "string",
@@ -446,7 +446,7 @@
         },
         "WAFPublicIP": {
             "type": "string",
-            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('wafpublicip'))).value.dnsSettings.fqdn]"
+            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('wafpublicip'))).dnsSettings.fqdn]"
         },
         "HTTPManagementPortOnWAF": {
             "type": "string",

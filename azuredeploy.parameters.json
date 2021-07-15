@@ -2,17 +2,8 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "ServerVMName": {
-            "value": "badstore1" 
-        },
-        "VirtualNetwork": {
-            "value": "vnet1" 
-        },
         "ServerPassword": {
             "value": "Pa$$w0rd123" 
-        },
-        "WafVmName": {
-            "value": "waf1" 
         },
         "WafPassword": {
             "value": "P@$$w0rd123" 

@@ -2,26 +2,11 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "ServerVMName": {
-            "type": "string",
-            "metadata": {
-                "description": "Provide a friendly name for the web app"
-            }
-        },
-        "VirtualNetwork": {
-            "type": "string"
-        },
         "ServerPassword": {
             "type": "securestring",
             "metadata": {
 
                 "description": "Password to access the server over ssh"
-            }
-        },
-        "WafVmName": {
-            "type": "string",
-            "metadata": {
-                "description": "Provide a friendly name for the web app"
             }
         },
         "WafPassword": {
@@ -32,20 +17,20 @@
         }
     },
     "variables": {
-        "servervm": "[toLower(parameters('ServerVMName'))]",
+        "servervm": "[toLower('badstore1')]",
         "serverstorage": "[concat(variables('servervm'), uniquestring(resourceGroup().id))]",
         "serverpublicip": "[concat(variables('servervm'), '-PublicIP')]",
         "servernsg": "[concat(variables('servervm'), '-nsg')]",
-        "vNETName": "[concat(parameters('VirtualNetwork'), '-VirtualNetwork')]",
+        "vNETName": "[concat('vnet1', '-VirtualNetwork')]",
         "servernic": "[concat(variables('servervm'), '-NetworkInterface')]",
         "serversubnet": "[concat(variables('vNETName'), variables('servervm'), '-Subnet')]",
         "serverpassword": "[parameters('ServerPassword')]",
         "wafsubnet": "[concat(variables('vNETName'), '-WAF', '-Subnet')]",
-        "wafvmname": "[parameters('WafVmName')]",
+        "wafvmname": "waf1",
         "wafstorage": "[tolower(concat(variables('wafvmname'), uniquestring(resourceGroup().id)))]",
-        "wafpublicip": "[concat(parameters('WafVmName'), '-PublicIP')]",
-        "wafnsg": "[concat(parameters('WafVmName'), '-nsg')]",
-        "wafnic": "[concat(parameters('WafVmName'), '-NetworkInterface')]",
+        "wafpublicip": "[concat(variables('wafvmname'), '-PublicIP')]",
+        "wafnsg": "[concat(variables('wafvmname'), '-nsg')]",
+        "wafnic": "[concat(variables('wafvmname'), '-NetworkInterface')]",
         "wafpassword": "[parameters('WafPassword')]",
         "wafpublisher": "barracudanetworks",
         "wafoffer": "waf",
@@ -451,27 +436,17 @@
         }
     ],
     "outputs": {
-        "Server": {
+        "ServerPublicIP": {
             "type": "object",
-            "value":"[reference(resourceId('Microsoft.Compute/virtualMachines',variables('servervm')))]"    
-
-        },
-        "ServerNIC": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Network/networkInterfaces',variables('servernic')))]"
+            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('serverpublicip'))).value.dnsSettings.fqdn]"
         },
         "ServerListeningPorts": {
             "type": "string",
             "value": "80 and 8080"
         },
-        "WAF": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Compute/virtualMachines',variables('wafvmname')))]"
-        },
-
         "WAFPublicIP": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('wafpublicip')))]"
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('wafpublicip'))).value.dnsSettings.fqdn]"
         },
         "HTTPManagementPortOnWAF": {
             "type": "string",

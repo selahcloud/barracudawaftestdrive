@@ -10,5 +10,7 @@ sudo apt-get -y install docker-ce
 sudo systemctl start docker
 sudo systemctl enable docker
 sudo groupadd docker
-sudo docker pull selahcloud/newbadstore:latest
-sudo docker run -it -d -p 80:80 selahcloud/newbadstore:latest
+sudo docker pull bwolmarans/petstore
+sudo docker run -it -d -p 8080:8080 bwolmarans/petstore
+sudo docker pull bwolmarans/badstore
+sudo docker run -it -d -p 80:80 bwolmarans/badstore

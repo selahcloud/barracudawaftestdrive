@@ -31,7 +31,6 @@
             }
         }
     },
-    "functions": [],
     "variables": {
         "servervm": "[toLower(parameters('ServerVMName'))]",
         "serverstorage": "[concat(variables('servervm'), uniquestring(resourceGroup().id))]",
@@ -51,7 +50,6 @@
         "wafpublisher": "barracudanetworks",
         "wafoffer": "waf",
         "wafsku": "byol"
-
     },
     "resources": [
 
@@ -96,11 +94,11 @@
                             "description": "description",
                             "protocol": "Tcp",
                             "sourcePortRange": "*",
-                            "destinationPortRange": "22",
+                            "destinationPortRange": "80",
                             "sourceAddressPrefix": "*",
                             "destinationAddressPrefix": "*",
                             "access": "Allow",
-                            "priority": 100,
+                            "priority": 101,
                             "direction": "Inbound"
                         }
                     },
@@ -110,11 +108,11 @@
                             "description": "description",
                             "protocol": "Tcp",
                             "sourcePortRange": "*",
-                            "destinationPortRange": "80",
+                            "destinationPortRange": "8080",
                             "sourceAddressPrefix": "*",
                             "destinationAddressPrefix": "*",
                             "access": "Allow",
-                            "priority": 101,
+                            "priority": 102,
                             "direction": "Inbound"
                         }
                     }
@@ -352,6 +350,20 @@
                             "priority": 103,
                             "direction": "Inbound"
                         }
+                    },
+                    {
+                        "name": "nsgRule5",
+                        "properties": {
+                            "description": "description",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "8080",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 104,
+                            "direction": "Inbound"
+                        }
                     }
                 ]
             }
@@ -439,10 +451,6 @@
         }
     ],
     "outputs": {
-        "VirtualNetwork": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', variables('vNETName')))]"
-        },
         "Server": {
             "type": "object",
             "value":"[reference(resourceId('Microsoft.Compute/virtualMachines',variables('servervm')))]"    
@@ -452,9 +460,9 @@
             "type": "object",
             "value": "[reference(resourceId('Microsoft.Network/networkInterfaces',variables('servernic')))]"
         },
-        "Vnetname": {
-            "type": "object",
-            "value": "[reference(variables('vNETName'))]"
+        "ServerListeningPorts": {
+            "type": "string",
+            "value": "80 and 8080"
         },
         "WAF": {
             "type": "object",
@@ -464,6 +472,18 @@
         "WAFPublicIP": {
             "type": "object",
             "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('wafpublicip')))]"
+        },
+        "HTTPManagementPortOnWAF": {
+            "type": "string",
+            "value": "8000"
+        },
+        "HTTPSManagementPortOnWAF": {
+            "type": "string",
+            "value": "8443"
+        },
+        "AvailableTrafficPortsOnWAF": {
+            "type": "string",
+            "value": "80,8080 and 443"
         }
 
     }

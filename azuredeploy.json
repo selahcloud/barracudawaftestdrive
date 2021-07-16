@@ -17,7 +17,7 @@
         }
     },
     "variables": {
-        "servervm": "[toLower('app1')]",
+        "servervm": "[toLower('app')]",
         "serverstorage": "[concat(variables('servervm'), uniquestring(resourceGroup().id))]",
         "serverpublicip": "[concat(variables('servervm'), '-PublicIP')]",
         "servernsg": "[concat(variables('servervm'), '-nsg')]",
@@ -26,7 +26,7 @@
         "serversubnet": "[concat(variables('vNETName'), variables('servervm'), '-Subnet')]",
         "serverpassword": "[parameters('ServerPassword')]",
         "wafsubnet": "[concat(variables('vNETName'), '-WAF', '-Subnet')]",
-        "wafvmname": "waf1",
+        "wafvmname": "waf",
         "wafstorage": "[tolower(concat(variables('wafvmname'), uniquestring(resourceGroup().id)))]",
         "wafpublicip": "[concat(variables('wafvmname'), '-PublicIP')]",
         "wafnsg": "[concat(variables('wafvmname'), '-nsg')]",
@@ -62,7 +62,7 @@
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "[toLower(variables('servervm'))]"
+                    "domainNameLabel": "[toLower(concat(variables('servervm'), uniqueString(resourceGroup().id)))]"
                 }
             }
         },
@@ -269,7 +269,7 @@
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "[variables('wafvmname')]"
+                    "domainNameLabel": "[toLower(concat(variables('wafvmname'), uniqueString(resourceGroup().id)))]"
                 }
             }
         },

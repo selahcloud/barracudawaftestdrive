@@ -79,7 +79,7 @@
                             "description": "description",
                             "protocol": "Tcp",
                             "sourcePortRange": "*",
-                            "destinationPortRange": "80",
+                            "destinationPortRange": "3000",
                             "sourceAddressPrefix": "*",
                             "destinationAddressPrefix": "*",
                             "access": "Allow",
@@ -93,7 +93,7 @@
                             "description": "description",
                             "protocol": "Tcp",
                             "sourcePortRange": "*",
-                            "destinationPortRange": "8080",
+                            "destinationPortRange": "22",
                             "sourceAddressPrefix": "*",
                             "destinationAddressPrefix": "*",
                             "access": "Allow",
@@ -194,7 +194,7 @@
                     "imageReference": {
                         "publisher": "Canonical",
                         "offer": "UbuntuServer",
-                        "sku": "16.04-LTS",
+                        "sku": "18.04-LTS",
                         "version": "latest"
                     },
                     "osDisk": {
@@ -335,20 +335,6 @@
                             "priority": 103,
                             "direction": "Inbound"
                         }
-                    },
-                    {
-                        "name": "nsgRule5",
-                        "properties": {
-                            "description": "description",
-                            "protocol": "Tcp",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "8080",
-                            "sourceAddressPrefix": "*",
-                            "destinationAddressPrefix": "*",
-                            "access": "Allow",
-                            "priority": 104,
-                            "direction": "Inbound"
-                        }
                     }
                 ]
             }
@@ -462,7 +448,7 @@
         },
         "AvailableTrafficPortsOnWAF": {
             "type": "string",
-            "value": "80,8080 and 443"
+            "value": "80, 443"
         }
 
     }

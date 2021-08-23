@@ -18,9 +18,9 @@ sudo apt install -y nodejs
 sudo apt install -y npm
 sudo apt -y  install gcc g++ make
 
-cd /home/labuser/ && git clone https://github.com/bkimminich/juice-shop.git
-#cd juice-shop
-#sudo npm install
-#sudo nohup npm start
+git clone https://github.com/bkimminich/juice-shop.git
+cd juice-shop
+sudo npm install --unsafe-perm=true --allow-root
+sudo nohup npm start &
 
 

@@ -11,12 +11,16 @@ sudo apt-get install apt-transport-https ca-certificates curl software-propertie
 #sudo systemctl start docker
 #sudo systemctl enable docker
 #sudo groupadd docker
+sudo apt -y install curl dirmngr apt-transport-https lsb-release ca-certificates
+curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 
 sudo apt install -y nodejs
 sudo apt install -y npm
-git clone https://github.com/bkimminich/juice-shop.git
+sudo apt -y  install gcc g++ make
+
+cd /home/labuser/ && git clone https://github.com/bkimminich/juice-shop.git
 sudo cd juice-shop
-sudo npm install
-sudo nohup npm start
+#sudo npm install
+#sudo nohup npm start
 
 

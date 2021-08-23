@@ -19,7 +19,7 @@ sudo apt install -y npm
 sudo apt -y  install gcc g++ make
 
 cd /home/labuser/ && git clone https://github.com/bkimminich/juice-shop.git
-sudo cd juice-shop
+#cd juice-shop
 #sudo npm install
 #sudo nohup npm start
 

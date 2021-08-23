@@ -15,7 +15,8 @@ sudo apt-get install apt-transport-https ca-certificates curl software-propertie
 sudo apt install -y nodejs
 sudo apt install -y npm
 git clone https://github.com/bkimminich/juice-shop.git
-cd juice-shop && sudo npm install
+sudo cd juice-shop
+sudo npm install
 sudo nohup npm start
 
 
